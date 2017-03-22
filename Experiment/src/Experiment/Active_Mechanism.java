@@ -8,6 +8,7 @@ import org.apache.commons.math3.linear.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Vector;
 
 
 public class Active_Mechanism {
@@ -30,7 +31,7 @@ public class Active_Mechanism {
         m_simulator = simulator;
     }
 
-    void Mech_SetUp(Obj_Function obj, RL_Decision rl_module, Prob_Model prob_model)
+    void Mechanism_SetUp(Obj_Function obj, RL_Decision rl_module, Prob_Model prob_model)
     {
         m_obj = obj;
         m_RL = rl_module;
@@ -48,7 +49,7 @@ public class Active_Mechanism {
             System.out.println(m_RL.getT()+">>>\t(Task: "+a.i +", Worker: "+a.j+")\t--->\t"+label);
 
             // Update the state variable
-            m_St.setEntry(a.i, a.j, label);
+            m_RL.UpdateSate(a, label);
 
             // Update the probability model
             m_PModel.Update(a, m_St);
@@ -136,8 +137,35 @@ class State extends BlockRealMatrix {
         }
         return available_action;
     }
+}
+
+/* Give an alias to the duplicated labeling table vector.
+ */
+class DVState {
+    Vector<State> m_state_vec;
+
+    DVState(State s, int d) {
+        m_state_vec = new Vector<>();
+        m_state_vec.add(s);
+        for(int i=1; i<d; ++i)
+        {
+            m_state_vec.add(s.copy());
+        }
+    }
+
+    <Any> void setEntry(int i, int j, Any val)
+    {
+        for(State s: m_state_vec)
+        {
+            s.setEntry(i,j, (double) val);
+        }
+    }
 
 
+    State get(int i)
+    {
+        return m_state_vec.get(i);
+    }
 }
 
 /* Give an alias to the task-worker decision (i---task no, j---worker no).

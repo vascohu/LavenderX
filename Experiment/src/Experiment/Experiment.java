@@ -34,25 +34,25 @@ public class Experiment {
         Obj_Function obj = new Confidence_Obj();
         RL_Decision rl_module = new EpsGrad_RL(0, mechanism.getLabelMat());
         Prob_Model prob_model = new MJ_Model(simulator);
-        mechanism.Mech_SetUp(obj, rl_module, prob_model);
+        mechanism.Mechanism_SetUp(obj, rl_module, prob_model);
 
 
 
-        mechanism.Run(30);
+        mechanism.Run(1);
         System.out.println("----------------Finished!-----------------");
         System.out.println("Objective Function: " + mechanism.getObjValue());
         System.out.println("Accuracy: " + Calculate_Accuracy(mechanism.getTaskLabel(), simulator.getTrue_label()));
 
 
-        Active_Mechanism mechanism2 = new Active_Mechanism(simulator);
-        Obj_Function obj2 = new Confidence_Obj();
-        RL_Decision rl_module2 = new OptGrad_RL(0, mechanism2.getLabelMat());
-        Prob_Model prob_model2 = new MJ_Model(simulator);
-        mechanism2.Mech_SetUp(obj2, rl_module2, prob_model2);
-
-        mechanism2.Run(30);
-        System.out.println("----------------Finished!-----------------");
-        System.out.println("Objective Function: " + mechanism2.getObjValue());
-        System.out.println("Accuracy: " + Calculate_Accuracy(mechanism2.getTaskLabel(), simulator.getTrue_label()));
+//        Active_Mechanism mechanism2 = new Active_Mechanism(simulator);
+//        Obj_Function obj2 = new Confidence_Obj();
+//        RL_Decision rl_module2 = new OptGrad_RL(0, mechanism2.getLabelMat());
+//        Prob_Model prob_model2 = new MJ_Model(simulator);
+//        mechanism2.Mech_SetUp(obj2, rl_module2, prob_model2);
+//
+//        mechanism2.Run(30);
+//        System.out.println("----------------Finished!-----------------");
+//        System.out.println("Objective Function: " + mechanism2.getObjValue());
+//        System.out.println("Accuracy: " + Calculate_Accuracy(mechanism2.getTaskLabel(), simulator.getTrue_label()));
     }
 }

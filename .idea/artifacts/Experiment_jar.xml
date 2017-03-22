@@ -2,9 +2,6 @@
   <artifact type="jar" name="Experiment:jar">
     <output-path>$PROJECT_DIR$/out/artifacts/Experiment_jar</output-path>
     <root id="archive" name="Experiment.jar">
-      <element id="directory" name="META-INF">
-        <element id="file-copy" path="$PROJECT_DIR$/../out/META-INF/MANIFEST.MF" />
-      </element>
       <element id="module-output" name="Experiment" />
       <element id="extracted-dir" path="$PROJECT_DIR$/External Lib/jsc.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$PROJECT_DIR$/External Lib/commons.math.jar" path-in-jar="/" />
