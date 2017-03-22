@@ -10,16 +10,14 @@ import java.util.concurrent.*;
  * Created by Zehong on 3/17/2017 0017.
  */
 abstract class RL_Decision {
-    ArrayList<Action> m_available_action;
-    double m_obj_value;
+    List<Action> m_available_action;
     int m_t;
 
     // Initialize the inner state
-    RL_Decision(int t0, double obj_value, ArrayList<Action> available_action)
+    RL_Decision(int t0, State S0)
     {
         m_t = t0;
-        m_obj_value = obj_value;
-        m_available_action = available_action;
+        m_available_action = S0.getAvailableAction();
     }
 
     // Make the task-worker decision
@@ -36,9 +34,9 @@ abstract class RL_Decision {
  */
 class Random_RL extends RL_Decision {
 
-    Random_RL(int t0, double obj_value, ArrayList<Action> available_action)
+    Random_RL(int t0, State S0)
     {
-        super(t0, obj_value, available_action);
+        super(t0, S0);
     }
 
     Action getDecision(State St, Prob_Model model, Obj_Function obj)
@@ -57,9 +55,9 @@ class Random_RL extends RL_Decision {
 /* The optimistic knowledge gradient method
  */
 class OptGrad_RL extends RL_Decision {
-    OptGrad_RL(int t0, double obj_value, ArrayList<Action> available_action)
+    OptGrad_RL(int t0, State S0)
     {
-        super(t0, obj_value, available_action);
+        super(t0, S0);
     }
 
     Action getDecision(State St, Prob_Model model, Obj_Function obj) throws InterruptedException {
@@ -87,11 +85,11 @@ class OptGrad_RL extends RL_Decision {
 /* The epsilon greedy method
  */
 class EpsGrad_RL extends RL_Decision {
-    private final double epsilon = 0.5;
+    private final double epsilon = 0.99;
 
-    EpsGrad_RL(int t0, double obj_value, ArrayList<Action> available_action)
+    EpsGrad_RL(int t0, State S0)
     {
-        super(t0, obj_value, available_action);
+        super(t0, S0);
     }
 
     Action getDecision(State St, Prob_Model model, Obj_Function obj) throws InterruptedException {
@@ -127,7 +125,7 @@ class EpsGrad_RL extends RL_Decision {
  */
 class CrowdTree {
     // The depth of the tree
-    public int depth = 3;
+    public int depth = 5;
     // The width of the sparse tree
     final int width = 5;
     // The discount of RL
@@ -219,7 +217,7 @@ class CrowdNode {
     public double labelProb;
 
     // Number of Threads
-    public final int nThreads = Runtime.getRuntime().availableProcessors()/2;
+    public final int nThreads = 6;//Runtime.getRuntime().availableProcessors()/2;
     public final int nSpareSampling = 100;
 
     // Flag of Sparse Sampling

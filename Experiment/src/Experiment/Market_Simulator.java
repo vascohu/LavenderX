@@ -7,6 +7,7 @@ package Experiment;
 import jsc.distributions.*;
 import org.apache.commons.math3.linear.BlockRealMatrix;
 import org.apache.commons.math3.linear.RealMatrix;
+import org.apache.commons.math3.linear.RealVector;
 
 
 public class Market_Simulator {
@@ -56,9 +57,9 @@ public class Market_Simulator {
         return m_class_num;
     }
 
-    public RealMatrix getTrue_label_mat()
+    public RealVector getTrue_label()
     {
-        return true_label_mat;
+        return true_label_mat.getColumnVector(0);
     }
 
     public RealMatrix getReliability_mat()
