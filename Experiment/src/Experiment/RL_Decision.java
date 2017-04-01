@@ -23,12 +23,12 @@ abstract class RL_Decision {
     {
         m_t = t0;
         m_available_action = S0.getAvailableAction();
-        int nThreads = Runtime.getRuntime().availableProcessors()/2+1;
+        int nThreads = 10;//Runtime.getRuntime().availableProcessors()/4+1;
         m_thread_service = new ThreadPoolExecutor(nThreads, nThreads,
                 0L, TimeUnit.MILLISECONDS,
-                new LinkedBlockingQueue<Runnable>(),
+                new LinkedBlockingQueue<>(),
                 new WorkerThreadFactory());
-        m_state_vec = new DVState(S0, nThreads);
+        m_state_vec = new DVState(S0, nThreads+1);
     }
 
     // Make the task-worker decision
@@ -47,9 +47,7 @@ abstract class RL_Decision {
     }
 
     // Close the multi-threading service
-    @Override
-    protected void finalize() throws Throwable {
-        super.finalize();
+    void closeThreadPool() {
         m_thread_service.shutdown();
     }
 }
@@ -119,7 +117,7 @@ class OptGrad_RL extends RL_Decision {
 /* The epsilon greedy method
  */
 class EpsGrad_RL extends RL_Decision {
-    private final static double epsilon = 0.99;
+    private double epsilon = 0;
 
     EpsGrad_RL(int t0, State S0)
     {
@@ -127,12 +125,12 @@ class EpsGrad_RL extends RL_Decision {
     }
 
     Action getDecision(State St, Prob_Model model, Obj_Function obj) throws InterruptedException {
-        Bernoulli random_ob = new Bernoulli(epsilon);
-        double exploitation_or_exploration = random_ob.random();
+        double exploitation_or_exploration = ThreadLocalRandom.current().nextDouble();
+        epsilon = Math.exp(-0.005*m_t);
         // Exploitation or exploration
         int index_of_action;
         Action at;
-        if (exploitation_or_exploration<0.5)
+        if (exploitation_or_exploration<epsilon)
         {
             // exploration by uniformly selecting the action
             index_of_action = ThreadLocalRandom.current().nextInt(m_available_action.size());

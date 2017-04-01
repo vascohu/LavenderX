@@ -7,6 +7,7 @@ package Experiment;
 import org.apache.commons.math3.linear.*;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
@@ -17,6 +18,7 @@ public class Active_Mechanism {
     private Prob_Model m_PModel;
     private State m_St;
     private Market_Simulator m_simulator;
+    List<Double> accuracy_record;
 
     Active_Mechanism(Market_Simulator simulator)
     {
@@ -39,6 +41,7 @@ public class Active_Mechanism {
     }
 
     void Run(int T) throws InterruptedException {
+        accuracy_record = new ArrayList<>();
         while (m_RL.getT() < T)
         {
             // Make the action decision
@@ -46,14 +49,22 @@ public class Active_Mechanism {
 
             // Get the label from the market
             double label = m_simulator.getLabelStream(a.i, a.j);
-            System.out.println(m_RL.getT()+">>>\t(Task: "+a.i +", Worker: "+a.j+")\t--->\t"+label);
+            //System.out.println(m_RL.getT()+">>>\t(Task: "+a.i +", Worker: "+a.j+")\t--->\t"+label);
 
             // Update the state variable
             m_RL.UpdateSate(a, label);
 
             // Update the probability model
             m_PModel.Update(a, m_St);
+
+            // Calculate the accuracy
+            if(m_RL.getT()%50==0)
+            {
+                double accuracy = Calculate_Accuracy(getTaskLabel(), m_simulator.getTrue_label());
+                accuracy_record.add(accuracy);
+            }
         }
+        m_RL.closeThreadPool();
     }
 
 
@@ -76,6 +87,24 @@ public class Active_Mechanism {
             task_label.add(prob_vec.getMaxIndex()+1);
         }
         return task_label;
+    }
+
+    private static double Calculate_Accuracy(List<Integer> learned_labels, RealVector true_labels)
+    {
+        int number_of_correct = 0;
+        Iterator<Integer> it1 = learned_labels.iterator();
+        double[] true_label_array = true_labels.toArray();
+        int i = 0;
+        while(it1.hasNext())
+        {
+            if(Math.abs(it1.next()-true_label_array[i])<0.5)
+            {
+                number_of_correct++;
+            }
+            ++i;
+        }
+
+        return (double)number_of_correct/learned_labels.size();
     }
 }
 
@@ -153,14 +182,21 @@ class DVState {
         }
     }
 
-    <Any> void setEntry(int i, int j, Any val)
+    void setEntry(int i, int j, double val)
     {
         for(State s: m_state_vec)
         {
-            s.setEntry(i,j, (double) val);
+            s.setEntry(i,j, val);
         }
     }
 
+    void setEntry(int i, int j, int val)
+    {
+        for(State s: m_state_vec)
+        {
+            s.setEntry(i,j, (double)val);
+        }
+    }
 
     State get(int i)
     {

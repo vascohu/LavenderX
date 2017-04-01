@@ -25,7 +25,7 @@ class CrowdNode {
     public double labelProb;
 
     // Number of Searching Space
-    public final int nSpareSampling = 200;
+    private final static int nSpareSampling = 200;
 
     // Flag of Sparse Sampling
     public boolean flagSparseSampling;
@@ -86,7 +86,12 @@ class CrowdNode {
             Iterator<Future<Double>> it1 = futures.iterator();
             Iterator<Action> it2 = actions.iterator();
             while (it1.hasNext()) {
-                action_value.put(it2.next(), it1.next().get());
+                Future<Double> future = it1.next();
+                if(!future.isDone())
+                {
+                    System.out.println("Error");
+                }
+                action_value.put(it2.next(), future.get());
             }
         } catch (InterruptedException | NullPointerException | ExecutionException e) {
             System.out.println("Multi-Threading Error: " + e.getMessage());
@@ -193,7 +198,7 @@ class PredictValueTask implements Callable<Double> {
     private double Cal_Opt_Action_value()
     {
         double m_obj = 0;
-        int index_of_state = Integer.parseInt(Thread.currentThread().getName());
+        int index_of_state = 1;//Integer.parseInt(Thread.currentThread().getName());
         State s = m_s_vec.get(index_of_state+1);
         for(int i=0; i<m_model.getClass_Num(); ++i) {
             double value = Cal_Label_Value(s, i + 1);

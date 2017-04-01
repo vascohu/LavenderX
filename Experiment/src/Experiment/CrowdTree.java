@@ -2,7 +2,6 @@ package Experiment;
 
 import org.apache.commons.math3.linear.RealVector;
 
-import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ThreadPoolExecutor;
 
@@ -12,15 +11,14 @@ import java.util.concurrent.ThreadPoolExecutor;
  */
 class CrowdTree {
     // The depth of the tree
-    private final static int depth = 5;
+    private final static int depth = 1;
     // The width of the sparse tree
-    private final static int width = 1;
+    private final static int width = 5;
     // The discount of RL
     private final static double gamma = 0.9;
     // The root
     final CrowdNode root;
 
-    public Date t1;
 
     CrowdTree(DVState s_vec, Prob_Model model, Obj_Function obj, List<Action> available_action, ThreadPoolExecutor executor)
     {
@@ -32,7 +30,6 @@ class CrowdTree {
 
     CrowdTree(DVState s_vec, Prob_Model model, Obj_Function obj, List<Action> available_action, ThreadPoolExecutor executor, boolean Sparse_Or_Not)
     {
-        t1 = new Date();
         root = new CrowdNode(null, null, 0, obj, false, 1.0, Sparse_Or_Not);
         root.crowdModel = model;
         root.objValue = obj.getObjValue(model);
@@ -42,11 +39,9 @@ class CrowdTree {
     private void TreeGrow(CrowdNode p_node, int d, DVState s_vec, List<Action> available_action, ThreadPoolExecutor executor) {
         if(d!=0)
         {
-            Date t2 = new Date();
-            System.out.println("Level "+d+" Before Children: "+(t2.getTime()-t1.getTime()));
+            // System.out.println("Level "+d+" Before Children: "+(t2.getTime()-t1.getTime()));
             p_node.Gene_Children(width, s_vec, available_action, executor);
-            t2 = new Date();
-            System.out.println("Level "+d+" After Children: "+(t2.getTime()-t1.getTime()));
+            // System.out.println("Level "+d+" After Children: "+(t2.getTime()-t1.getTime()));
             double action_value = -Double.MAX_VALUE;
             for(List<CrowdNode> action_node: p_node.childNodes)
             {
@@ -69,8 +64,8 @@ class CrowdTree {
                 }
             }
             p_node.objValue += gamma*(action_value - p_node.objValue);
-            t2 = new Date();
-            System.out.println("Level "+d+" Final: "+(t2.getTime()-t1.getTime()));
+            // t2 = new Date();
+            // System.out.println("Level "+d+" Final: "+(t2.getTime()-t1.getTime()));
         }
     }
 }
